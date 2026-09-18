@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* =========================================================
+   1) DESIGN TOKENS
+   Warna & font dasar disimpan sebagai custom property.
+========================================================= */
+:root {
+  --aqua: #29bcb7;
+  --cream: #fbf6ee;      /* warna tombol / teks di atas aqua */
+  --ink: #17162c;        /* warna teks di atas cream */
+  --grey: #2b2b2b;
+  --font-display: "Urbanist", sans-serif;
+  --font-body: "Urbanist", sans-serif;
+}
+
+/* =========================================================
+   2) RESET DASAR
+========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: #0b2033;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+button {
+  font: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--aqua);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   3) NAV DRAWER
+  ========================================================= */
+.nav-drawer {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.nav-drawer.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* =========================================================
+   4) TOOLTIP YANG MENGIKUTI KURSOR
+ ========================================================= */
+.tag {
+  position: absolute;
+  z-index: 4;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+.tag--hover {
+  top: 0;
+  left: 0;
+  transform: translate(-50%, calc(-100% - 14px));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  will-change: left, top;
+}
+
+/* =========================================================
+   5) ANIMASI ICON MELAYANG (float) + reduced-motion
+========================================================= */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.6rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .collage__icon { animation: none; }
+  .icon-wrap:hover { transform: none; }
+}
+
+/* =========================================================
+   6) PROJECT CARD STACK — tab map + clip-path bersusun
+========================================================= */
+.pj {
+  --pj-tab-h: clamp(2.5rem, 5.2vw, 5.5rem);   /* tinggi tab == sisi serong 45° */
+  --pj-tab-w: max(4.5rem, 17.3%);             /* lebar tab, relatif lebar kartu */
+  --pj-tab-step: max(5.6rem, 21%);            /* geser horizontal tiap kartu */
+
+  --pj-pad: clamp(1.25rem, 3.5vw, 4rem);
+  --pj-gutter: clamp(0.75rem, 1vw, 1rem);
+
+  --pj-1: var(--aqua, #29bcb7);
+  --pj-2: #14161A;
+  --pj-3: #F1EBDF;
+  --pj-4: #2b2b2b;
+  --pj-ink: #14161A;
+  --pj-light: #FBF6EE;
+}
+
+.pj-card {
+  --l: calc(var(--i) * var(--pj-tab-step));
+  position: sticky;
+  top: 0;
+  z-index: var(--i);
+  background: var(--card);
+  color: var(--fg);
+  padding-top: calc(var(--pj-tab-h) + var(--pj-pad));
+  clip-path: polygon(var(--l) 0,
+      calc(var(--l) + var(--pj-tab-w)) 0,
+      calc(var(--l) + var(--pj-tab-w) + var(--pj-tab-h)) var(--pj-tab-h),
+      100% var(--pj-tab-h),
+      100% 100%,
+      0 100%,
+      0 var(--pj-tab-h),
+      calc(var(--l) - var(--pj-tab-h)) var(--pj-tab-h));
+}
+
+.pj-card__tab {
+  position: absolute;
+  top: 0;
+  left: var(--l);
+  width: var(--pj-tab-w);
+  height: var(--pj-tab-h);
+}
+
+.pj-chip {
+  /* sudut kiri-atas & kanan-bawah dipangkas, seperti stiker sobek */
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+}
+
+.pj-tape {
+  position: absolute;
+  width: clamp(3.5rem, 7vw, 7.5rem);
+  height: clamp(1.25rem, 2.3vw, 2.5rem);
+  background: rgb(255 255 255 / .45);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .3);
+}
+
+.pj-link {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: .7rem;
+}
+
+.pj a:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}

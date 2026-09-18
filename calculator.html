@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Volume Bola — Gus Surya</title>
+
+  <link rel="stylesheet" href="src/output.css">
+  <link rel="icon" type="image/png" href="assets/head.png">
+</head>
+
+<body class="bg-[var(--grey)] text-white antialiased">
+
+  <!-- ============ MINI TOPBAR ============ -->
+  <header class="flex items-center justify-between px-10 py-6 lg:px-20">
+    <a href="index.html#project"
+      class="pj-link inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.15em] text-white/80 transition-colors hover:text-[var(--aqua)]">
+      <span aria-hidden="true">←</span> Back to Portfolio
+    </a>
+    <span class="text-[12px] font-extrabold uppercase tracking-[0.2em] text-white/40">Project 04</span>
+  </header>
+
+  <main class="px-10 pb-28 lg:px-20">
+
+    <!-- ============ TITLE ============ -->
+    <section class=" flex flex-col justify-center gap-4 mx-auto items-center max-w-[720px] pt-8 pb-16 text-center">
+      <p
+        class="flex items-center justify-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-extrabold uppercase tracking-[0.2em] text-[var(--aqua)]">
+        Calculator Project
+      </p>
+      <h1 class="mt-6 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        Sphere Volume & Area
+      </h1>
+      <img class=" w-[200px]" src="assets/sphere.png" alt="">
+      <p class="mx-auto mt-6 max-w-[42ch] text-[16px] text-white/65 lg:text-[18px]">
+        Enter the sphere's radius to instantly calculate its volume and surface area.
+      </p>
+    </section>
+
+    <!-- ============ CALCULATOR ============ -->
+    <section class="mx-auto grid max-w-[820px] items-start gap-6 lg:grid-cols-[1.1fr_1fr]">
+
+      <!-- input card -->
+      <div class="rounded-2xl border border-white/10 bg-black/20 p-8 lg:p-10">
+        <label for="r" class="block text-[12px] font-bold uppercase tracking-[0.15em] text-white/60">
+         SPHERE RADIUS (R)
+        </label>
+
+        <div id="rWrap"
+          class="mt-3 flex items-center gap-3 border-b-2 border-white/20 pb-2 transition-colors focus-within:border-[var(--aqua)]">
+          <input id="r" type="number" min="0" step="any" inputmode="decimal" placeholder="0"
+            aria-describedby="errorMsg"
+            class="w-full bg-transparent text-3xl font-extrabold tracking-tight outline-none placeholder:text-white/25" />
+          <span class="shrink-0 text-sm font-bold text-white/40">cm</span>
+        </div>
+
+        <p id="errorMsg" role="alert" aria-live="polite" class="mt-3 hidden text-[13px] font-semibold text-[#FF6A3D]">
+          Please enter a valid radius value!
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4">
+          <button id="btnHitung" type="button"
+            class="pj-chip bg-[var(--aqua)] px-6 py-3.5 text-[13px] font-bold uppercase tracking-[0.1em] text-[#14161A] transition-transform hover:-translate-y-0.5 active:translate-y-0">
+            CALCULATE SPHERE
+          </button>
+          <button id="btnReset" type="button"
+            class="pj-chip border border-white/25 bg-transparent px-6 py-3.5 text-[13px] font-bold uppercase tracking-[0.1em] text-white/80 transition-colors hover:border-[var(--aqua)] hover:text-[var(--aqua)]">
+            RESET
+          </button>
+        </div>
+      </div>
+
+      <!-- results -->
+      <div class="grid gap-6">
+        <h2 class="sr-only">Hasil Perhitungan</h2>
+
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-8">
+          <p class="text-[12px] font-bold uppercase tracking-[0.15em] text-white/50">SPHERE VOLUME</p>
+          <p class="mt-3 flex items-baseline gap-2">
+            <span id="hasilVolume" class="text-5xl font-extrabold tracking-tight lg:text-6xl">0</span>
+            <span class="font-bold text-white/50">cm³</span>
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-8">
+          <p class="text-[12px] font-bold uppercase tracking-[0.15em] text-white/50">SURFACE AREA</p>
+          <p class="mt-3 flex items-baseline gap-2">
+            <span id="hasilLuas" class="text-5xl font-extrabold tracking-tight lg:text-6xl">0</span>
+            <span class="font-bold text-white/50">cm²</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FORMULA NOTE ============ -->
+    <section class="mx-auto mt-14 max-w-[820px] text-center">
+      <p class="text-[13px] text-white/40">
+        Formula&nbsp; V&nbsp;=&nbsp;4⁄3&nbsp;π&nbsp;r³ &nbsp;·&nbsp; L&nbsp;=&nbsp;4&nbsp;π&nbsp;r²
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Library jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      function showError(msg) {
+        $('#errorMsg').text(msg).removeClass('hidden');
+        $('#rWrap').removeClass('border-white/20').addClass('border-[#FF6A3D]');
+        $('#r').attr('aria-invalid', 'true');
+      }
+
+      function clearError() {
+        $('#errorMsg').addClass('hidden');
+        $('#rWrap').removeClass('border-[#FF6A3D]').addClass('border-white/20');
+        $('#r').removeAttr('aria-invalid');
+      }
+
+      // Hitung volume & luas permukaan saat tombol "Calculate" diklik
+      $('#btnHitung').click(function () {
+        let r = parseFloat($('#r').val());
+
+        if (isNaN(r) || r <= 0) {
+          showError('Please enter a valid radius value!');
+          return;
+        }
+        clearError();
+
+        let volume = (4 / 3) * Math.PI * Math.pow(r, 3);
+        let luas = 4 * Math.PI * Math.pow(r, 2);
+
+        $('#hasilVolume').text(volume.toFixed(2));
+        $('#hasilLuas').text(luas.toFixed(2));
+      });
+
+      // Reset input & hasil
+      $('#btnReset').click(function () {
+        $('#r').val('');
+        $('#hasilVolume').text('0');
+        $('#hasilLuas').text('0');
+        clearError();
+      });
+
+      // Enter di input = klik tombol hitung
+      $('#r').on('keydown', function (e) {
+        if (e.key === 'Enter') $('#btnHitung').click();
+      });
+
+    });
+  </script>
+
+</body>
+</html>
