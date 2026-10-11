@@ -8,14 +8,82 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="src/output.css">
-  <link rel="icon" type="image/png" href="assets/head.png">
+  <link rel="icon" type="image/png" href="assets/head.webp">
 </head>
 
 <body>
+  <!-- ============ PRELOADER ============ -->
+  <div id="loader" role="status"
+    class="fixed inset-0 z-[100] flex flex-col justify-between bg-[#0b2033] p-[clamp(1.25rem,4vw,3.5rem)] text-[var(--cream)] transition-transform duration-900 ease-[cubic-bezier(0.76,0,0.24,1)]">
+    <span class="sr-only">Memuat halaman</span>
+
+    <div
+      class="flex items-center justify-between text-[clamp(0.7rem,0.85vw,0.9rem)] font-extrabold uppercase tracking-[0.2em]"
+      aria-hidden="true">
+      <span>Gus Surya</span>
+      <span class="text-[var(--aqua)]">Portfolio</span>
+    </div>
+
+    <div class="flex items-end justify-between gap-6" aria-hidden="true">
+      <p id="loaderCount"
+        class="font-display text-[clamp(7rem,30vw,26rem)] font-black leading-[0.8] tracking-[-0.03em] text-[var(--aqua)] tabular-nums">
+        000</p>
+      <p class="animate-pulse pb-2 text-[clamp(0.7rem,0.85vw,0.9rem)] font-extrabold uppercase tracking-[0.2em]">Loading
+      </p>
+    </div>
+
+    <div class="absolute inset-x-0 bottom-0 h-1 bg-white/10" aria-hidden="true">
+      <div id="loaderBar" class="h-full w-0 bg-[var(--aqua)]"></div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const loader = document.getElementById("loader");
+      const count = document.getElementById("loaderCount");
+      const bar = document.getElementById("loaderBar");
+      const root = document.documentElement;
+
+      if (location.hash || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        loader.remove();
+        return;
+      }
+
+      const DURATION = 1800; 
+      const t0 = performance.now();
+      let loaded = document.readyState === "complete";
+      window.addEventListener("load", () => (loaded = true));
+      setTimeout(() => (loaded = true), 6000); 
+
+      root.classList.add("overflow-hidden");
+
+      function tick(now) {
+        const t = Math.min((now - t0) / DURATION, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const p = loaded ? eased : Math.min(eased, 0.9); 
+        count.textContent = String(Math.round(p * 100)).padStart(3, "0");
+        bar.style.width = `${p * 100}%`;
+        if (p < 1) return requestAnimationFrame(tick);
+        setTimeout(exit, 250);
+      }
+
+      function exit() {
+        root.classList.remove("overflow-hidden");
+        loader.classList.add("-translate-y-full");
+        loader.addEventListener("transitionend", (e) => {
+          if (e.target === loader) loader.remove();
+        });
+      }
+
+      requestAnimationFrame(tick);
+    })();
+  </script>
+
   <!-- ============ TOPBAR ============ -->
-  <header id="top" class="fixed inset-x-0 top-0 z-50 flex items-center justify-end gap-3 px-[clamp(1.25rem,4vw,3.5rem)] py-[clamp(1.25rem,3vw,2.25rem)]">
+  <header id="top"
+    class="fixed inset-x-0 top-0 z-50 flex items-center justify-end gap-3 px-[clamp(1.25rem,4vw,3.5rem)] py-[clamp(1.25rem,3vw,2.25rem)]">
     <button
-      class="grid h-[3.25rem] w-[3.25rem] place-items-center rounded-full border-0 bg-[var(--cream)] text-[var(--ink)] [transition:transform_0.2s_ease] hover:-translate-y-0.5"
+      class="grid h-[3.25rem] w-[3.25rem] place-items-center rounded-full border-0 bg-[var(--cream)] text-[var(--ink)] transition-transform duration-200 hover:-translate-y-0.5"
       id="menuBtn" aria-label="Buka menu" aria-expanded="false" aria-controls="navDrawer">
       <span class="flex w-[1.1rem] flex-col gap-1">
         <span class="h-0.5 rounded-[2px] bg-[var(--ink)]"></span>
@@ -26,16 +94,27 @@
   </header>
 
   <!-- ============ NAV DRAWER ============ -->
-  <nav class="nav-drawer fixed inset-0 z-[60] flex flex-col items-center justify-center gap-8 bg-[#0b2033]" id="navDrawer">
+  <nav class="nav-drawer fixed inset-0 z-[60] flex flex-col items-center justify-center gap-8 bg-[#0b2033]"
+    id="navDrawer">
     <button
-      class="absolute top-[clamp(1.25rem,3vw,2.25rem)] right-[clamp(1.25rem,4vw,3.5rem)] grid h-[3.25rem] w-[3.25rem] place-items-center rounded-full border-0 bg-[var(--cream)] text-[var(--ink)] [transition:transform_0.2s_ease] hover:-translate-y-0.5"
+      class="absolute top-[clamp(1.25rem,3vw,2.25rem)] right-[clamp(1.25rem,4vw,3.5rem)] grid h-[3.25rem] w-[3.25rem] place-items-center rounded-full border-0 bg-[var(--cream)] text-[var(--ink)] transition-transform duration-200 hover:-translate-y-0.5"
       id="closeBtn" aria-label="Tutup menu">✕</button>
     <ul class="m-0 list-none space-y-[1.1rem] p-0 text-center">
-      <li><a href="#home" class="font-[var(--font-display)] text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Home</a></li>
-      <li><a href="#about" class="font-[var(--font-display)] text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">About Me</a></li>
-      <li><a href="#study" class="font-[var(--font-display)] text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Study Journey</a></li>
-      <li><a href="#project" class="font-[var(--font-display)] text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Project & Achievement</a></li>
-      <li><a href="#contact" class="font-[var(--font-display)] text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Contact</a></li>
+      <li><a href="#home"
+          class="font-display text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Home</a>
+      </li>
+      <li><a href="#about"
+          class="font-display text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">About
+          Me</a></li>
+      <li><a href="#study"
+          class="font-display text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Study
+          Journey</a></li>
+      <li><a href="#project"
+          class="font-display text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Project
+          & Achievement</a></li>
+      <li><a href="#contact"
+          class="font-display text-[clamp(2rem,6vw,3.25rem)] font-bold text-[var(--cream)] hover:text-[var(--aqua)]">Contact</a>
+      </li>
     </ul>
   </nav>
 
@@ -44,35 +123,36 @@
     <section id="home"
       class="hero relative min-h-screen overflow-hidden pt-12 max-[860px]:flex max-[860px]:flex-col max-[860px]:items-center max-[860px]:pt-24 max-[860px]:text-center">
       <h1
-        class="hero__title relative z-[1] m-0 flex items-center justify-center gap-4 font-[var(--font-display)] font-black leading-[0.82] tracking-[-0.01em] text-[var(--aqua)] lg:gap-24">
+        class="hero__title relative z-[1] m-0 flex items-center justify-center gap-4 font-display font-black leading-[0.82] tracking-[-0.01em] text-[var(--aqua)] lg:gap-24">
         <span class="text-[4em] max-[860px]:m-0 max-[860px]:text-center lg:text-[16em]">Gus</span>
         <span class="text-[4em] max-[860px]:m-0 max-[860px]:text-center lg:text-[16em]">Surya</span>
       </h1>
 
       <div
         class="collage relative z-[2] mx-auto mt-[-2.5rem] aspect-[4/5] w-[min(56rem,78vw)] max-[860px]:order-2 max-[860px]:m-[5.5rem] max-[860px]:w-[min(70rem,82vw)]">
-        <div class="collage__photo absolute left-[16%] right-[16%] top-[14%] z-[100] aspect-square drop-shadow-[0_1rem_1.4rem_rgba(0,0,0,0.35)]">
-          <img class="h-full w-full object-contain" src="assets/head.png" alt="">
+        <div
+          class="collage__photo absolute left-[16%] right-[16%] top-[14%] z-[100] aspect-square drop-shadow-[0_1rem_1.4rem_rgba(0,0,0,0.35)]">
+          <img class="h-full w-full object-contain" src="assets/head.webp" alt="">
         </div>
 
         <div class="collage__icons absolute inset-0 z-[3]">
 
           <!-- Brain icon: dekoratif, tanpa link -->
           <div
-            class="icon-wrap group absolute left-[22%] top-[8%] z-[1] w-[25%] [transition:transform_0.2s_ease] hover:scale-[1.08] hover:cursor-pointer">
+            class="icon-wrap group absolute left-[22%] top-[8%] z-[1] w-[25%] transition-transform duration-200 hover:scale-[1.08] hover:cursor-pointer motion-reduce:hover:scale-100">
             <div
-              class="collage__icon w-full animate-[float_5.5s_ease-in-out_infinite] [animation-delay:0.6s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
-              <img src="assets/brain.png" alt="">
+              class="collage__icon w-full animate-float motion-reduce:animate-none [animation-delay:0.6s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
+              <img src="assets/brain.webp" alt="">
             </div>
           </div>
 
           <!-- Guitar icon -> About Me -->
           <a href="#about">
             <div
-              class="icon-wrap group absolute left-[26%] -top-[8%] z-[5] w-[18%] -rotate-[20deg] [transition:transform_0.2s_ease] hover:scale-[1.08] hover:cursor-pointer">
+              class="icon-wrap group absolute left-[26%] -top-[8%] z-[5] w-[18%] -rotate-[20deg] transition-transform duration-200 hover:scale-[1.08] hover:cursor-pointer motion-reduce:hover:scale-100">
               <div
-                class="collage__icon w-full animate-[float_5.5s_ease-in-out_infinite] [animation-delay:1.1s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
-                <img src="assets/guitar.png" alt="">
+                class="collage__icon w-full animate-float motion-reduce:animate-none [animation-delay:1.1s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
+                <img src="assets/guitar.webp" alt="">
               </div>
               <span class="tag tag--hover group-hover:opacity-100">About Me</span>
             </div>
@@ -81,10 +161,10 @@
           <!-- Study icon -> Study Journey -->
           <a href="#study">
             <div
-              class="icon-wrap group absolute left-[35%] -top-[7%] z-[2] w-[27%] -rotate-[10deg] [transition:transform_0.2s_ease] hover:scale-[1.08] hover:cursor-pointer">
+              class="icon-wrap group absolute left-[35%] -top-[7%] z-[2] w-[27%] -rotate-[10deg] transition-transform duration-200 hover:scale-[1.08] hover:cursor-pointer motion-reduce:hover:scale-100">
               <div
-                class="collage__icon w-full animate-[float_5.5s_ease-in-out_infinite] [animation-delay:0.3s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
-                <img src="assets/study.png" alt="">
+                class="collage__icon w-full animate-float motion-reduce:animate-none [animation-delay:0.3s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
+                <img src="assets/study.webp" alt="">
               </div>
               <span class="tag tag--hover group-hover:opacity-100">Study Journey</span>
             </div>
@@ -93,10 +173,10 @@
           <!-- Project icon -> Project & Achievement -->
           <a href="#project">
             <div
-              class="icon-wrap group absolute left-[50%] top-0 z-[4] w-[34%] rotate-[10deg] [transition:transform_0.2s_ease] hover:scale-[1.08] hover:cursor-pointer">
+              class="icon-wrap group absolute left-[50%] top-0 z-[4] w-[34%] rotate-[10deg] transition-transform duration-200 hover:scale-[1.08] hover:cursor-pointer motion-reduce:hover:scale-100">
               <div
-                class="collage__icon w-full animate-[float_5.5s_ease-in-out_infinite] [animation-delay:1.4s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
-                <img src="assets/project.png" alt="">
+                class="collage__icon w-full animate-float motion-reduce:animate-none [animation-delay:1.4s] drop-shadow-[0_0.6rem_0.7rem_rgba(0,0,0,0.3)]">
+                <img src="assets/project.webp" alt="">
               </div>
               <span class="tag tag--hover group-hover:opacity-100">Project & Achievement</span>
             </div>
@@ -115,23 +195,27 @@
     </section>
 
     <div class="w-full">
-      <img class="w-full object-cover" src="assets/transaction.png" alt="">
+      <img class="w-full object-cover" src="assets/transaction.webp" alt="">
     </div>
 
     <section id="about" class="flex flex-col items-center justify-center gap-5 bg-[var(--grey)] px-10 py-10 lg:px-20">
       <h2 class="text-center text-3xl font-bold tracking-tight text-white lg:text-6xl">about <br><span
           class="text-[var(--aqua)]">This Guy</span></h2>
-      <img class="w-[200px] lg:w-[400px]" src="assets/head2.png" alt="">
+      <img class="w-[200px] animate-float motion-reduce:animate-none lg:w-[400px]" src="assets/head2.webp" alt="">
       <p class="text-center text-4xl font-extrabold leading-tight tracking-tight text-white lg:text-8xl">
         A college student who
         interested in <span class="text-[var(--aqua)]">web developing</span> and curious about it
       </p>
-      <img class="relative ml-[200px] w-28 lg:ml-[300px] lg:w-50" src="assets/hand.png" alt="">
+      <img class="relative ml-[200px] w-28 lg:ml-[300px] lg:w-50" src="assets/hand.webp" alt="">
 
       <div class="flex flex-col gap-4 py-20 lg:flex-row">
-        <h3 class="text-2xl font-bold text-[var(--aqua)] lg:m-auto lg:w-1/3 lg:pr-10 lg:text-right lg:text-4xl">Gus Surya</h3>
+        <h3 class="text-2xl font-bold text-[var(--aqua)] lg:m-auto lg:w-1/3 lg:pr-10 lg:text-right lg:text-4xl">Gus
+          Surya</h3>
         <div class="divider border-t border-gray-400 lg:w-1/12 lg:border-t-0 lg:border-l"></div>
-        <p class="text-[16px] text-white lg:w-1/2 lg:text-[20px]">Starting his journey in software engineering during vocational high school, Gus Surya has always been fascinated by the intersection of design and code. Today, he focuses on wireframing, prototyping, and building responsive websites that are as functional as they are visually engaging.</p>
+        <p class="text-[16px] text-white lg:w-1/2 lg:text-[20px]">Starting his journey in software engineering during
+          vocational high school, Gus Surya has always been fascinated by the intersection of design and code. Today, he
+          focuses on wireframing, prototyping, and building responsive websites that are as functional as they are
+          visually engaging.</p>
       </div>
     </section>
 
@@ -140,47 +224,56 @@
           class="text-[var(--aqua)]">Study Journey</span></h2>
 
       <ul class="w-full">
-        <li class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
+        <li
+          class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
           <p class="text-2xl font-bold text-[var(--aqua)] lg:w-1/4 lg:text-3xl">
             <time datetime="2022/2025">2022 - 2025</time>
           </p>
           <h3 class="text-2xl font-bold text-white lg:w-1/4 lg:text-3xl">Software Engineering (RPL)</h3>
           <p class="text-[16px] text-white lg:w-1/2 lg:pl-6 lg:text-[20px]">
-            Starting My Software Engineering Journey at SMK TI BALI GLOBAL Singaraja, the place that i study about built a solid foundation in programming fundamentals, HTML/CSS, PHP, MySQL, and basic UI design principles.
+            Starting My Software Engineering Journey at SMK TI BALI GLOBAL Singaraja, the place that i study about built
+            a solid foundation in programming fundamentals, HTML/CSS, PHP, MySQL, and basic UI design principles.
           </p>
         </li>
-        <li class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
+        <li
+          class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
           <p class="text-2xl font-bold text-[var(--aqua)] lg:w-1/4 lg:text-3xl">
             <time datetime="2023/2024">2023 - 2024</time>
           </p>
           <h3 class="text-2xl font-bold text-white lg:w-1/4 lg:text-3xl">Early Web Design Victories</h3>
           <p class="text-[16px] text-white lg:w-1/2 lg:pl-6 lg:text-[20px]">
-            Started exploring UI/UX and web development through student competitions, winning awards that sparked a passion for digital product design.
+            Started exploring UI/UX and web development through student competitions, winning awards that sparked a
+            passion for digital product design.
           </p>
         </li>
-        <li class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
+        <li
+          class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
           <p class="text-2xl font-bold text-[var(--aqua)] lg:w-1/4 lg:text-3xl">
             <time datetime="2025/2026">2025 - Present</time>
           </p>
           <h3 class="text-2xl font-bold text-white lg:w-1/4 lg:text-3xl">Software Engineering Technology</h3>
           <p class="text-[16px] text-white lg:w-1/2 lg:pl-6 lg:text-[20px]">
-            Continue Persue My Education at Universitas Pendidikan Ganesha by choosing Software Engineering major. Focusing on modern web application design, front-end development, software architecture, and collaborative tech projects.
+            Continue Persue My Education at Universitas Pendidikan Ganesha by choosing Software Engineering major.
+            Focusing on modern web application design, front-end development, software architecture, and collaborative
+            tech projects.
           </p>
         </li>
-        <li class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
+        <li
+          class="flex flex-col gap-4 border-t-1 border-gray-400 py-12 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-20">
           <p class="text-2xl font-bold text-[var(--aqua)] lg:w-1/4 lg:text-3xl">
             <time datetime="2025/2026">2025 - 2026</time>
           </p>
           <h3 class="text-2xl font-bold text-white lg:w-1/4 lg:text-3xl">Web & UI/UX Competitions</h3>
           <p class="text-[16px] text-white lg:w-1/2 lg:pl-6 lg:text-[20px]">
-            Actively competing in national-level web design and UI/UX challenges, applying user-centered design and front-end practices.
+            Actively competing in national-level web design and UI/UX challenges, applying user-centered design and
+            front-end practices.
           </p>
         </li>
       </ul>
     </section>
 
     <div class="w-full">
-      <img class="w-full object-cover" src="assets/transaction2.png" alt="">
+      <img class="w-full object-cover" src="assets/transaction2.webp" alt="">
     </div>
 
     <section class="pj" id="project">
@@ -203,15 +296,18 @@
           <div
             class="grid items-center gap-[var(--pj-pad)] px-[var(--pj-pad)] pb-[var(--pj-pad)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
             <div>
-              <p class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
+              <p
+                class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
                 <span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
                 February 28, 2025
               </p>
-              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">ReadSphere</h3>
+              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">ReadSphere
+              </h3>
               <p class="mt-7 max-w-[34ch] text-[clamp(1rem,1.5vw,1.6rem)] leading-[1.45]">
                 Securing 2nd place by reimagining digital library access into an effortless, intuitive web platform
               </p>
-              <a target="_blank" href="https://www.figma.com/proto/t65jnT4DbnUlQy3AKihXlL/Untitled?node-id=71-64&t=VD5ohcOhlLWrjz8o-1"
+              <a target="_blank"
+                href="https://www.figma.com/proto/t65jnT4DbnUlQy3AKihXlL/Untitled?node-id=71-64&t=VD5ohcOhlLWrjz8o-1"
                 class="pj-link mt-11 inline-flex items-center gap-3 text-[clamp(0.75rem,1vw,1.05rem)] font-extrabold uppercase tracking-[0.15em]">
                 View project <span aria-hidden="true">↗</span>
               </a>
@@ -229,7 +325,8 @@
               <span class="pj-tape -top-3 -left-4 -rotate-[11deg]" aria-hidden="true"></span>
               <span class="pj-tape -top-3 -right-4 rotate-[11deg]" aria-hidden="true"></span>
               <div class="bg-[var(--pj-light)] p-2">
-                <img class="block w-full aspect-[7/4] object-cover" src="assets/project1.png" alt="Preview project Wayline">
+                <img class="block w-full aspect-[7/4] object-cover" src="assets/project1.webp"
+                  alt="Preview project ReadSphere">
               </div>
             </figure>
           </div>
@@ -245,15 +342,18 @@
           <div
             class="grid items-center gap-[var(--pj-pad)] px-[var(--pj-pad)] pb-[var(--pj-pad)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
             <div>
-              <p class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
+              <p
+                class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
                 <span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
                 November 5, 2025
               </p>
-              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">Summitra</h3>
+              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">Summitra
+              </h3>
               <p class="mt-7 max-w-[34ch] text-[clamp(1rem,1.5vw,1.6rem)] leading-[1.45]">
                 Transforming mountain climbing safety into an intuitive, 3rd-place winning virtual companion app.
               </p>
-              <a target="_blank" href="https://www.figma.com/proto/NhQaFR2p6Q7K5d6PLaywcx/Summitra-Design?node-id=1436-5847&p=f&t=odjdnXYqzKu3iJ88-1&scaling=min-zoom&content-scaling=fixed&page-id=14%3A6&starting-point-node-id=548%3A2773"
+              <a target="_blank"
+                href="https://www.figma.com/proto/NhQaFR2p6Q7K5d6PLaywcx/Summitra-Design?node-id=1436-5847&p=f&t=odjdnXYqzKu3iJ88-1&scaling=min-zoom&content-scaling=fixed&page-id=14%3A6&starting-point-node-id=548%3A2773"
                 class="pj-link mt-11 inline-flex items-center gap-3 text-[clamp(0.75rem,1vw,1.05rem)] font-extrabold uppercase tracking-[0.15em]">
                 View project <span aria-hidden="true">↗</span>
               </a>
@@ -271,7 +371,8 @@
               <span class="pj-tape -top-3 -left-4 -rotate-[11deg]" aria-hidden="true"></span>
               <span class="pj-tape -top-3 -right-4 rotate-[11deg]" aria-hidden="true"></span>
               <div class="bg-[var(--pj-light)] p-2">
-                <img class="block w-full aspect-[7/4] object-cover" src="assets/project2.png" alt="Preview project Tandem">
+                <img class="block w-full aspect-[7/4] object-cover" src="assets/project2.webp"
+                  alt="Preview project Summitra">
               </div>
             </figure>
           </div>
@@ -287,7 +388,8 @@
           <div
             class="grid items-center gap-[var(--pj-pad)] px-[var(--pj-pad)] pb-[var(--pj-pad)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
             <div>
-              <p class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
+              <p
+                class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
                 <span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
                 June 28, 2026
               </p>
@@ -295,7 +397,8 @@
               <p class="mt-7 max-w-[34ch] text-[clamp(1rem,1.5vw,1.6rem)] leading-[1.45]">
                 Designing a 1st-place winning UI/UX concept that helps users master their money with ease.
               </p>
-              <a target="_blank" href="https://www.figma.com/proto/bVVFG17ySntIlOaUr4DYbi/Kazero-s-Project?node-id=75-9&t=MOfg4dhoNskFJt7V-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=75%3A9&show-proto-sidebar=1"
+              <a target="_blank"
+                href="https://www.figma.com/proto/bVVFG17ySntIlOaUr4DYbi/Kazero-s-Project?node-id=75-9&t=MOfg4dhoNskFJt7V-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=75%3A9&show-proto-sidebar=1"
                 class="pj-link mt-11 inline-flex items-center gap-3 text-[clamp(0.75rem,1vw,1.05rem)] font-extrabold uppercase tracking-[0.15em]">
                 View project <span aria-hidden="true">↗</span>
               </a>
@@ -313,7 +416,8 @@
               <span class="pj-tape -top-3 -left-4 -rotate-[11deg]" aria-hidden="true"></span>
               <span class="pj-tape -top-3 -right-4 rotate-[11deg]" aria-hidden="true"></span>
               <div class="bg-[#FFFFFF] p-2">
-                <img class="block w-full aspect-[7/4] object-cover" src="assets/project3.png" alt="Preview project Forge">
+                <img class="block w-full aspect-[7/4] object-cover" src="assets/project3.webp"
+                  alt="Preview project Kazero">
               </div>
             </figure>
           </div>
@@ -329,11 +433,13 @@
           <div
             class="grid items-center gap-[var(--pj-pad)] px-[var(--pj-pad)] pb-[var(--pj-pad)] text-white lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
             <div>
-              <p class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
+              <p
+                class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
                 <span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
                 Sep 18, 2026
               </p>
-              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">Calculator Project</h3>
+              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">Calculator
+                Project</h3>
               <p class="mt-7 max-w-[34ch] text-[clamp(1rem,1.5vw,1.6rem)] leading-[1.45]">
                 Helping people understand how to count Volume of a sphere.
               </p>
@@ -355,11 +461,58 @@
               <span class="pj-tape -top-3 -left-4 -rotate-[11deg]" aria-hidden="true"></span>
               <span class="pj-tape -top-3 -right-4 rotate-[11deg]" aria-hidden="true"></span>
               <div class="bg-[var(--pj-light)] p-2">
-                <img class="block w-full aspect-[7/4] object-cover" src="assets/project4.png" alt="Preview project Volt">
+                <img class="block w-full aspect-[7/4] object-cover" src="assets/project4.webp"
+                  alt="Preview project Calculator Project">
               </div>
             </figure>
           </div>
         </article>
+
+        <!-- ── 05 ── -->
+        <article class="pj-card" style="--i:4; --card:var(--pj-5); --fg:var(--pj-ink);">
+          <div
+            class="pj-card__tab flex items-center justify-center gap-3 text-[clamp(0.65rem,0.98vw,1.05rem)] font-extrabold uppercase tracking-[0.2em]">
+            <span><span class="hidden sm:inline">Project </span>05</span>
+          </div>
+
+          <div
+            class="grid items-center gap-[var(--pj-pad)] px-[var(--pj-pad)] pb-[var(--pj-pad)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
+            <div>
+              <p
+                class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-bold uppercase tracking-[0.18em]">
+                <span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
+                OCT 10, 2026
+              </p>
+              <h3 class="mt-6 text-[clamp(2.75rem,5.6vw,6rem)] font-extrabold leading-[0.92] tracking-tight">Taskly</h3>
+              <p class="mt-7 max-w-[34ch] text-[clamp(1rem,1.5vw,1.6rem)] leading-[1.45]">
+                Task and deadline manager built specifically for university students to turn chaotic semesters into
+                smooth
+              </p>
+              <a href="https://gusdeksur.github.io/Taskly/" target="_blank"
+                class="pj-link mt-11 inline-flex items-center gap-3 text-[clamp(0.75rem,1vw,1.05rem)] font-extrabold uppercase tracking-[0.15em]">
+                View project <span aria-hidden="true">↗</span>
+              </a>
+              <ul class="mt-11 flex flex-wrap gap-4">
+                <li
+                  class="pj-chip bg-[var(--pj-ink)] px-5 py-3.5 text-[clamp(0.7rem,0.9vw,0.95rem)] font-bold uppercase tracking-[0.1em] text-[var(--pj-light)]">
+                  React JS</li>
+                <li
+                  class="pj-chip bg-[var(--pj-ink)] px-5 py-3.5 text-[clamp(0.7rem,0.9vw,0.95rem)] font-bold uppercase tracking-[0.1em] text-[var(--pj-light)]">
+                  Tailwind</li>
+              </ul>
+            </div>
+
+            <figure class="relative">
+              <span class="pj-tape -top-3 -left-4 -rotate-[11deg]" aria-hidden="true"></span>
+              <span class="pj-tape -top-3 -right-4 rotate-[11deg]" aria-hidden="true"></span>
+              <div class="bg-[var(--pj-light)] p-2">
+                <img class="block w-full aspect-[7/4] object-cover" src="assets/project5.webp"
+                  alt="Preview project Project Name">
+              </div>
+            </figure>
+          </div>
+        </article>
+
 
       </div>
 
@@ -371,7 +524,8 @@
   <footer class="px-10 py-20 lg:px-20 lg:py-28" id="contact">
 
     <div class="flex flex-col items-center gap-4 text-center">
-      <p class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-extrabold uppercase tracking-[0.2em] text-[var(--aqua)]">
+      <p
+        class="flex items-center gap-3 text-[clamp(0.7rem,0.85vw,0.9rem)] font-extrabold uppercase tracking-[0.2em] text-[var(--aqua)]">
         Contact
       </p>
       <h2 class="text-3xl font-bold tracking-tight text-white lg:text-6xl">
@@ -382,14 +536,17 @@
       </p>
     </div>
 
-    <a href="mailto:ibkdsurya@://gmail.com ingin bertanya tentang..."
+    <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=ibkdsurya@gmail.com&amp;su=Ingin%20bertanya%20tentang"
+      target="_blank" rel="noopener noreferrer"
       class="pj-link mx-auto mt-12 block w-fit text-center text-[clamp(1.5rem,4.2vw,3.5rem)] font-extrabold tracking-tight text-white transition-colors hover:text-[var(--aqua)]">
       ibkdsurya@gmail.com
     </a>
 
     <ul class="mt-14 flex items-center justify-center gap-6">
       <li>
-        <a href="mailto:ibkdsurya@://gmail.com ingin bertanya tentang..." aria-label="Email" class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
+        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=ibkdsurya@gmail.com&amp;su=Ingin%20bertanya%20tentang"
+          target="_blank" rel="noopener noreferrer" aria-label="Email"
+          class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
           <svg class="size-6 lg:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <path d="M3 7l9 6 9-6" />
@@ -397,7 +554,8 @@
         </a>
       </li>
       <li>
-        <a href="#" aria-label="WhatsApp" class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
+        <a href="#" aria-label="WhatsApp"
+          class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
           <svg class="size-6 lg:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <path d="M12 3a8 8 0 0 0-7 12l-1 4 4-1a8 8 0 1 0 4-15z" />
             <path d="M8.5 10.5c.3 2 2 3.7 4 4" stroke-linecap="round" />
@@ -405,7 +563,8 @@
         </a>
       </li>
       <li>
-        <a href="#" aria-label="Instagram" class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
+        <a href="#" aria-label="Instagram"
+          class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
           <svg class="size-6 lg:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <rect x="4" y="4" width="16" height="16" rx="5" />
             <circle cx="12" cy="12" r="3.5" />
@@ -414,7 +573,8 @@
         </a>
       </li>
       <li>
-        <a href="#" aria-label="LinkedIn" class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
+        <a href="#" aria-label="LinkedIn"
+          class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
           <svg class="size-6 lg:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <rect x="3" y="3" width="18" height="18" rx="3" />
             <line x1="7" y1="10" x2="7" y2="17" />
@@ -425,7 +585,8 @@
         </a>
       </li>
       <li>
-        <a href="#" aria-label="GitHub" class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
+        <a href="#" aria-label="GitHub"
+          class="grid size-11 place-items-center rounded-full border-[1.5px] border-white/35 text-[var(--aqua)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--aqua)]">
           <svg class="size-6 lg:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
             <circle cx="12" cy="12" r="9" />
             <path d="M9 9l-2.5 3L9 15M15 9l2.5 3-2.5 3" stroke-linecap="round" stroke-linejoin="round" />
@@ -434,9 +595,12 @@
       </li>
     </ul>
 
-    <div class="mx-auto mt-16 flex max-w-[1200px] flex-col-reverse items-center gap-4 border-t border-gray-400/40 pt-8 text-center lg:flex-row lg:justify-between">
+    <div
+      class="mx-auto mt-16 flex max-w-[1200px] flex-col-reverse items-center gap-4 border-t border-gray-400/40 pt-8 text-center lg:flex-row lg:justify-between">
       <p class="text-[13px] text-white/50">© 2026 Gus Surya. All rights reserved.</p>
-      <a href="#home" class="text-[13px] font-bold uppercase tracking-[0.15em] text-white/50 transition-colors hover:text-[var(--aqua)]">Back to top ↑</a>
+      <a href="#home"
+        class="text-[13px] font-bold uppercase tracking-[0.15em] text-white/50 transition-colors hover:text-[var(--aqua)]">Back
+        to top ↑</a>
     </div>
   </footer>
 
